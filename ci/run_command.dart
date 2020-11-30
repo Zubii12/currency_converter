@@ -78,7 +78,7 @@ Stream<String> runAndGetStdout(
 
   unawaited(stderr.addStream(process.stderr));
   final Stream<String> lines = process.stdout.transform(utf8.decoder).transform(const LineSplitter());
-  await for (String line in lines) {
+  await for (final String line in lines) {
     yield line;
   }
 
