@@ -11,16 +11,19 @@ import 'package:pedantic/pedantic.dart';
 
 final bool hasColor = stdout.supportsAnsiEscapes;
 
-final Directory rootDir = Directory(Platform.environment['PROJECT_ROOT'] ?? Directory.current.path);
+final Directory rootDir =
+    Directory(Platform.environment['PROJECT_ROOT'] ?? Directory.current.path);
 
 final String bold = hasColor ? '\x1B[1m' : ''; // used for shard titles
 final String red = hasColor ? '\x1B[31m' : ''; // used for errors
-final String green = hasColor ? '\x1B[32m' : ''; // used for section titles, commands
+final String green =
+    hasColor ? '\x1B[32m' : ''; // used for section titles, commands
 final String yellow = hasColor ? '\x1B[33m' : ''; // unused
 final String cyan = hasColor ? '\x1B[36m' : ''; // used for paths
 final String reverse = hasColor ? '\x1B[7m' : ''; // used for clocks
 final String reset = hasColor ? '\x1B[0m' : '';
-final String redLine = '$red━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$reset';
+final String redLine =
+    '$red━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$reset';
 
 bool fileFilter(String it) =>
     it.endsWith('.dart') && //
@@ -45,7 +48,8 @@ String prettyPrintDuration(Duration duration) {
     result += '${minutes}min ';
   }
   final int seconds = duration.inSeconds - minutes * 60;
-  final int milliseconds = duration.inMilliseconds - (seconds * 1000 + minutes * 60 * 1000);
+  final int milliseconds =
+      duration.inMilliseconds - (seconds * 1000 + minutes * 60 * 1000);
   return result += '$seconds.${milliseconds.toString().padLeft(3, "0")}s';
 }
 
@@ -63,7 +67,8 @@ Stream<String> runAndGetStdout(
   String failureMessage,
   Function beforeExit,
 }) async* {
-  final String commandDescription = '${path.relative(executable, from: workingDirectory)} ${arguments.join(' ')}';
+  final String commandDescription =
+      '${path.relative(executable, from: workingDirectory)} ${arguments.join(' ')}';
   final String relativeWorkingDir = path.relative(workingDirectory);
 
   printProgress('RUNNING', relativeWorkingDir, commandDescription);
@@ -77,7 +82,8 @@ Stream<String> runAndGetStdout(
   );
 
   unawaited(stderr.addStream(process.stderr));
-  final Stream<String> lines = process.stdout.transform(utf8.decoder).transform(const LineSplitter());
+  final Stream<String> lines =
+      process.stdout.transform(utf8.decoder).transform(const LineSplitter());
   await for (final String line in lines) {
     yield line;
   }
@@ -85,7 +91,8 @@ Stream<String> runAndGetStdout(
   final int exitCode = await process.exitCode;
   print(
       '$clock ELAPSED TIME: ${prettyPrintDuration(time.elapsed)} for $green$commandDescription$reset in $cyan$relativeWorkingDir$reset');
-  if ((exitCode == 0) == expectNonZeroExit || (expectedExitCode != null && exitCode != expectedExitCode)) {
+  if ((exitCode == 0) == expectNonZeroExit ||
+      (expectedExitCode != null && exitCode != expectedExitCode)) {
     if (failureMessage != null) {
       print(failureMessage);
     }
@@ -117,7 +124,8 @@ Future<void> runCommand(
       'The output parameter must be non-null with and only with '
       'OutputMode.capture');
 
-  final String commandDescription = '${path.relative(executable, from: workingDirectory)} ${arguments.join(' ')}';
+  final String commandDescription =
+      '${path.relative(executable, from: workingDirectory)} ${arguments.join(' ')}';
   final String relativeWorkingDir = path.relative(workingDirectory);
   if (skip) {
     printProgress('SKIPPING', relativeWorkingDir, commandDescription);
@@ -164,7 +172,8 @@ Future<void> runCommand(
       ..stderr = _flattenToString(await savedStderr);
   }
 
-  if ((exitCode == 0) == expectNonZeroExit || (expectedExitCode != null && exitCode != expectedExitCode)) {
+  if ((exitCode == 0) == expectNonZeroExit ||
+      (expectedExitCode != null && exitCode != expectedExitCode)) {
     if (failureMessage != null) {
       print(failureMessage);
     }
@@ -190,7 +199,8 @@ Future<void> runCommand(
 }
 
 /// Flattens a nested list of UTF-8 code units into a single string.
-String _flattenToString(List<List<int>> chunks) => utf8.decode(chunks.expand<int>((List<int> ints) => ints).toList());
+String _flattenToString(List<List<int>> chunks) =>
+    utf8.decode(chunks.expand<int>((List<int> ints) => ints).toList());
 
 /// Specifies what to do with command output from [runCommand].
 enum OutputMode { print, capture, discard }
